@@ -95,6 +95,34 @@
     document.getElementById("moonMessage").style.opacity = 1;
   }
 </script>
+  <a href="hidden-gift.html" class="surprise-btn">One Last Surprise Awaits...</a>
+
+<style>
+  .surprise-btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 12px 24px;
+    background: #fff5fa;
+    color: #a02662;
+    font-family: 'Georgia', serif;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    animation: fadeIn 3s ease-in;
+    box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
+    transition: background 0.3s ease;
+  }
+
+  .surprise-btn:hover {
+    background: #ffe1ee;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
 
 </body>
 </html>

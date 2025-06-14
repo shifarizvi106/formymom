@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>To the Moon</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      font-family: 'Georgia', serif;
+      color: white;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .moon {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .moon:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    .message {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+      color: #ffc0cb;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<div class="moon" onclick="showMessage()"></div>
+<div class="message" id="moonMessage">I love you to the moon and back. 🌙</div>
+
+<script>
+  // Star field
+  const canvas = document.getElementById("starfield");
+  const ctx = canvas.getContext("2d");
+  let stars = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.onresize = resize;
+
+  for (let i = 0; i < 300; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5,
+      alpha: Math.random()
+    });
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(star => {
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+      ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+
+  drawStars();
+
+  // Moon message
+  function showMessage() {
+    document.getElementById("moonMessage").style.opacity = 1;
+  }
+</script>
+
+</body>
+</html>

@@ -1,239 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>To the Moon</title>
+
   <style>
+    /* ===== Global page setup ===== */
     html, body {
       margin: 0;
-      padding: 0;
-      background: black;
+      height: 100%;
       overflow: hidden;
-      font-family: 'Georgia', serif;
-      color: white;
+      background: #000;
+      font-family: "Georgia", serif;
+      color: #fff;
+      text-align: center;
     }
 
-    canvas {
+    canvas#starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: block;
     }
 
+    /* ===== Moon ===== */
     .moon {
-      <div class="moon" id="moon"></div>
-
       position: absolute;
-      top: 40%;
+      top: 35%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 120px;
-      height: 120px;
-      background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+      width: 140px;
+      height: 140px;
       border-radius: 50%;
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+      background: radial-gradient(circle at 30% 30%, #fff, #dcdcdc 60%, #bdbdbd 100%);
+      box-shadow: 0 0 30px rgba(255,255,255,0.6);
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: transform .3s ease;
     }
+    .moon:hover { transform: translate(-50%, -50%) scale(1.05); }
 
-    .moon:hover {
-      transform: translate(-50%, -50%) scale(1.05);
-    }
-
-    .message {
+    /* ===== Message revealed after click ===== */
+    #moonMessage {
       position: absolute;
       top: 60%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       color: #ffc0cb;
-      text-align: center;
       opacity: 0;
       transition: opacity 1s ease;
+    }
+
+    /* ===== Surprise button (initially hidden) ===== */
+    .surprise-btn {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 12px 26px;
+      background: #fff5fa;
+      color: #a02662;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      text-decoration: none;
+      box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;                /* hidden until revealed */
+      pointer-events: none;      /* disable clicks until revealed */
+    }
+
+    /* Fade‑in + enable pointer events once we add .show */
+    .surprise-btn.show {
+      animation: fadeIn 1.8s forwards;
+      pointer-events: auto;
+    }
+
+    /* Soft sparkle effect */
+    .surprise-btn::before {
+      content: "";
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,.4) 20%, transparent 60%);
+      animation: sparkle 4s linear infinite;
+      pointer-events: none;
+    }
+
+    /* ===== Animations ===== */
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes sparkle {
+      0%   { transform: rotate(0deg);   opacity:.6; }
+      50%  { opacity:1; }
+      100% { transform: rotate(360deg); opacity:.6; }
     }
   </style>
 </head>
 <body>
 
-<canvas id="starfield"></canvas>
+  <!-- Starfield canvas -->
+  <canvas id="starfield"></canvas>
 
-<div class="moon" onclick="showMessage()"></div>
-<div class="message" id="moonMessage">I love you to the moon and back. 🌙</div>
+  <!-- Clickable Moon -->
+  <div class="moon" id="moon"></div>
 
-<script>
-  // Star field
-  const canvas = document.getElementById("starfield");
-  const ctx = canvas.getContext("2d");
-  let stars = [];
+  <!-- Hidden message -->
+  <div id="moonMessage">I love you to the moon and back 🌙</div>
 
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.onresize = resize;
+  <!-- Hidden surprise button -->
+  <a href="hidden-gift.html" id="surpriseBtn" class="surprise-btn">One Last Surprise Awaits …</a>
 
-  for (let i = 0; i < 300; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.5,
-      alpha: Math.random()
+  <script>
+    /* === Starfield setup === */
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let w, h, stars = [];
+
+    function resize() {
+      w = canvas.width  = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      stars = [];
+      for (let i = 0; i < 300; i++) {
+        stars.push({x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.5, a: Math.random()});
+      }
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function draw() {
+      ctx.clearRect(0,0,w,h);
+      stars.forEach(s=>{
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    /* === Moon interactivity === */
+    const moon   = document.getElementById('moon');
+    const msg    = document.getElementById('moonMessage');
+    const button = document.getElementById('surpriseBtn');
+    let revealed = false;
+
+    moon.addEventListener('click', () => {
+      if (revealed) return;               // prevent double‑click issues
+      revealed = true;
+
+      // fade in message
+      msg.style.opacity = 1;
+
+      // reveal button with class that triggers fade + sparkle
+      button.classList.add('show');
     });
-  }
-
-  function drawStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(star => {
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
-      ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(drawStars);
-  }
-
-  drawStars();
-
-  // Moon message
-  function showMessage() {
-    document.getElementById("moonMessage").style.opacity = 1;
-  }
-</script>
-  <a href="hidden-gift.html" class="surprise-btn">One Last Surprise Awaits...</a>
-
-<style>
-  .surprise-btn {
-    display: inline-block;
-    margin-top: 40px;
-    padding: 12px 24px;
-    background: #fff5fa;
-    color: #a02662;
-    font-family: 'Georgia', serif;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    animation: fadeIn 3s ease-in;
-    box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
-    transition: background 0.3s ease;
-  }
-
-  .surprise-btn:hover {
-    background: #ffe1ee;
-  }
-
-  @keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(30px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-</style>
-
-  <!-- ✨ Hidden button that appears only after moon is clicked -->
-<a href="hidden-gift.html" class="surprise-btn" id="surpriseBtn" style="display: none;">One Last Surprise Awaits...</a>
-
-<style>
-  .surprise-btn {
-    display: inline-block;
-    margin-top: 40px;
-    padding: 12px 24px;
-    background: #fff5fa;
-    color: #a02662;
-    font-family: 'Georgia', serif;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
-    animation: fadeIn 2s ease-in;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .surprise-btn::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.4) 20%, transparent 60%);
-    animation: sparkle 3s infinite;
-    pointer-events: none;
-  }
-
-  @keyframes sparkle {
-    0% { transform: rotate(0deg); opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { transform: rotate(360deg); opacity: 0.6; }
-  }
-
-  @keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-</style>
-
-<script>
-  // This assumes your moon has id="moon"
-  const moon = document.getElementById("moon");
-  const button = document.getElementById("surpriseBtn");
-
-  if (moon) {
-    moon.addEventListener("click", () => {
-      button.style.display = "inline-block";
-    });
-  }
-</script>
-
-  <!-- Surprise button (hidden initially) -->
-<a href="hidden-gift.html" id="surpriseBtn" class="surprise-btn" style="display:none;">
-  One Last Surprise Awaits...
-</a>
-
-<!-- Sparkle and fade-in style -->
-<style>
-  .surprise-btn {
-    display: inline-block;
-    margin-top: 40px;
-    padding: 12px 24px;
-    background: #fff5fa;
-    color: #a02662;
-    font-family: 'Georgia', serif;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 1.2rem;
-    box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
-    animation: fadeIn 2s ease-in;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .surprise-btn::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.4) 20%, transparent 60%);
-    animation: sparkle 3s infinite;
-    pointer-events: none;
-  }
-
-  @keyframes sparkle {
-    0% { transform: rotate(0deg); opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { transform: rotate(360deg); opacity: 0.6; }
-  }
-
-  @keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-</style>
-
-<script>
-  document.getElementById("moon").addEventListener("click", () => {
-    document.getElementById("surpriseBtn").style.display = "inline-block";
-  });
-</script>
-
+  </script>
 
 </body>
 </html>

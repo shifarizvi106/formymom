@@ -73,6 +73,27 @@
       transform: translateY(-50%);
     }
 
+    .lid-fake,
+    .lid-real {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40%;
+      background: #b31246;
+      border-radius: 15px 15px 0 0;
+      z-index: 2;
+    }
+
+    .lid-real {
+      transform-origin: top;
+      transition: transform 1s ease;
+    }
+
+    .lid-real.open {
+      transform: rotateX(-120deg);
+    }
+
     .gift-box.shake {
       animation: shake 0.4s;
     }
@@ -83,23 +104,6 @@
       50% { transform: translateX(10px); }
       75% { transform: translateX(-6px); }
       100% { transform: translateX(0); }
-    }
-
-    .lid {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 40%;
-      background: #b31246;
-      border-radius: 15px 15px 0 0;
-      transform-origin: top;
-      z-index: 2;
-      transition: transform 1s ease;
-    }
-
-    .lid.open {
-      transform: rotateX(-120deg);
     }
 
     .surprise-image {
@@ -118,23 +122,24 @@
       bottom: 50%;
     }
 
-    #tryAgain {
-      margin-top: 25px;
-      font-size: 1.2rem;
-      color: #555;
-      display: none;
-    }
-
     .yay {
       font-size: 1.8rem;
       color: #b31246;
       margin-top: 20px;
       animation: pop 0.5s ease;
+      display: none;
     }
 
     @keyframes pop {
       0% { transform: scale(0.8); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
+    }
+
+    #tryAgain {
+      margin-top: 25px;
+      font-size: 1.2rem;
+      color: #555;
+      display: none;
     }
 
     @media (max-width: 600px) {
@@ -153,27 +158,28 @@
   <h1>Can you find your final gift, Mom?</h1>
 
   <div class="grid" id="giftGrid">
-    <!-- Boxes 1–6 -->
-    <div class="gift-wrapper"><div class="gift-box" data-box="1"></div></div>
-    <div class="gift-wrapper"><div class="gift-box" data-box="2"></div></div>
-    <div class="gift-wrapper"><div class="gift-box" data-box="3"></div></div>
-    <div class="gift-wrapper"><div class="gift-box" data-box="4"></div></div>
-    <div class="gift-wrapper"><div class="gift-box" data-box="5"></div></div>
-    <div class="gift-wrapper"><div class="gift-box" data-box="6"></div></div>
+    <!-- 9 boxes: add fake lids to all -->
+    <!-- Box 1-6 -->
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="1"></div></div>
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="2"></div></div>
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="3"></div></div>
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="4"></div></div>
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="5"></div></div>
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="6"></div></div>
 
-    <!-- ✅ Correct box (box 7) -->
+    <!-- ✅ Correct box -->
     <div class="gift-wrapper" id="winnerBox">
-      <div class="lid" id="lid"></div>
+      <div class="lid-real" id="lid"></div>
       <img src="meandmom.jpg" alt="Me and Mom" class="surprise-image" id="surpriseImage">
       <div class="gift-box" data-box="7"></div>
     </div>
 
-    <!-- Boxes 8–9 -->
-    <div class="gift-wrapper"><div class="gift-box" data-box="8"></div></div>
-    <div class="gift-wrapper"><div class="gift-box" data-box="9"></div></div>
+    <!-- Box 8-9 -->
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="8"></div></div>
+    <div class="gift-wrapper"><div class="lid-fake"></div><div class="gift-box" data-box="9"></div></div>
   </div>
 
-  <div class="yay" id="yayMessage" style="display: none;">YAY!!!! you won</div>
+  <div class="yay" id="yayMessage">YAY!!!! you won</div>
   <div id="tryAgain">Not this one! Try again 💖</div>
 
   <script>
@@ -200,7 +206,6 @@
           origin: { y: 0.7 }
         });
       } else {
-        // Shake the clicked box
         box.classList.add("shake");
         setTimeout(() => box.classList.remove("shake"), 400);
 

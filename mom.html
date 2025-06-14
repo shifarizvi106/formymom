@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Do You Know?</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff0f5;
+      font-family: 'Georgia', serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #8b0000;
+      margin-bottom: 10px;
+      transition: opacity 2s ease;
+    }
+
+    #countdown {
+      font-size: 1.5rem;
+      color: #b22222;
+      margin-bottom: 40px;
+      transition: opacity 1s ease;
+    }
+
+    .cake-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 2s ease-in-out forwards;
+    }
+
+    .cake {
+      position: relative;
+      width: 160px;
+      margin-top: 20px;
+      cursor: pointer;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+
+    .cake-layer {
+      height: 35px;
+      border-radius: 10px;
+      margin: 0 auto;
+      box-shadow: 0 4px 0 #cc4c57 inset;
+    }
+
+    .top-layer {
+      background: #ffc0cb;
+      width: 100px;
+    }
+
+    .middle-layer {
+      background: #ff99aa;
+      width: 120px;
+      margin-top: -10px;
+    }
+
+    .bottom-layer {
+      background: #ff7b8a;
+      width: 140px;
+      margin-top: -10px;
+    }
+
+    .cake-base {
+      background: #8b0000;
+      width: 160px;
+      height: 8px;
+      border-radius: 5px;
+      margin-top: -6px;
+    }
+
+    .candle-stick {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 40px;
+      background: #fff;
+      border-radius: 2px;
+      box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .flame {
+      position: absolute;
+      top: -65px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ffff66 0%, #ff9900 70%, #ff4500 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(255, 150, 0, 0.8);
+      animation: flameFlicker 1s infinite ease-in-out;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.4rem;
+      color: #d6336c;
+      opacity: 0;
+      animation: fadeIn 2s ease-in-out forwards;
+      animation-delay: 1s;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes flameFlicker {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.2); }
+    }
+
+    canvas#confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <h1 id="mainText">Do you know what day today is?</h1>
+  <div id="countdown">15</div>
+
+  <div class="cake-container" id="cakeContainer">
+    <a href="letter.html" style="text-decoration: none;">
+      <div class="cake">
+        <div class="candle-stick"></div>
+        <div class="flame"></div>
+        <div class="cake-layer top-layer"></div>
+        <div class="cake-layer middle-layer"></div>
+        <div class="cake-layer bottom-layer"></div>
+        <div class="cake-base"></div>
+      </div>
+    </a>
+    <div class="message">Happy Birthday to you, Mom! ❤️🎂</div>
+  </div>
+
+  <script>
+    let countdown = 15;
+    const countdownEl = document.getElementById('countdown');
+    const cakeContainer = document.getElementById('cakeContainer');
+    const mainText = document.getElementById('mainText');
+
+    const timer = setInterval(() => {
+      countdown--;
+      countdownEl.textContent = countdown;
+
+      if (countdown <= 0) {
+        clearInterval(timer);
+        countdownEl.style.opacity = 0;
+        mainText.style.opacity = 0;
+        cakeContainer.style.display = 'flex';
+        launchConfetti();
+      }
+    }, 1000);
+
+    // Confetti
+    function launchConfetti() {
+      const confettiSettings = { target: 'confetti-canvas' };
+      const confetti = new ConfettiGenerator(confettiSettings);
+      confetti.render();
+      setTimeout(() => confetti.clear(), 5000);
+    }
+  </script>
+
+  <!-- Confetti JS Library (lightweight) -->
+  <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
+
+</body>
+</html>

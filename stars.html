@@ -123,6 +123,62 @@
   }
 </style>
 
+  <!-- ✨ Hidden button that appears only after moon is clicked -->
+<a href="hidden-gift.html" class="surprise-btn" id="surpriseBtn" style="display: none;">One Last Surprise Awaits...</a>
+
+<style>
+  .surprise-btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 12px 24px;
+    background: #fff5fa;
+    color: #a02662;
+    font-family: 'Georgia', serif;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px rgba(255, 192, 203, 0.5);
+    animation: fadeIn 2s ease-in;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .surprise-btn::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 20%, transparent 60%);
+    animation: sparkle 3s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes sparkle {
+    0% { transform: rotate(0deg); opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { transform: rotate(360deg); opacity: 0.6; }
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  // This assumes your moon has id="moon"
+  const moon = document.getElementById("moon");
+  const button = document.getElementById("surpriseBtn");
+
+  if (moon) {
+    moon.addEventListener("click", () => {
+      button.style.display = "inline-block";
+    });
+  }
+</script>
+
 
 </body>
 </html>

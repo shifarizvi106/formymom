@@ -3,73 +3,102 @@
 <head>
   <meta charset="UTF-8">
   <title>Find the Hidden Gift</title>
+
+  <!-- Confetti library (tiny, 3 KB) -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(to bottom, #fff0f5, #ffe4e1);
-      font-family: 'Georgia', serif;
-      text-align: center;
-      color: #4b2e2e;
-      overflow-x: hidden;
+    /* ===== Page basics ===== */
+    body{
+      margin:0;
+      font-family:"Georgia",serif;
+      background:linear-gradient(to bottom,#fff0f5,#ffe4e1);
+      color:#4b2e2e;
+      text-align:center;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
     }
 
-    h1 {
-      margin-top: 40px;
-      font-size: 2rem;
+    h1{ margin:40px 0 10px; font-size:2rem; }
+
+    /* ===== Grid layout ===== */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+      max-width:540px;
+      width:90%;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      max-width: 600px;
-      margin: 40px auto;
+    /* ===== Gift box styling ===== */
+    .gift{
+      position:relative;
+      width:160px;
+      height:160px;
+      margin:auto;
+      background:#d6336c;
+      border-radius:15px;
+      cursor:pointer;
+      transition:transform .2s;
+      box-shadow:0 8px 16px rgba(0,0,0,.15);
+    }
+    .gift:hover{ transform:scale(1.05); }
+
+    /* Ribbon vertical */
+    .gift::before,
+    .gift::after{
+      content:"";
+      position:absolute;
+      background:#fff;
+      border-radius:4px;
+    }
+    .gift::before{ /* vertical ribbon */
+      top:0; bottom:0; left:50%; width:20px; transform:translateX(-50%);
+    }
+    .gift::after{  /* horizontal ribbon */
+      left:0; right:0; top:50%; height:20px; transform:translateY(-50%);
     }
 
-    .gift {
-      background: url('https://cdn-icons-png.flaticon.com/512/4436/4436481.png') no-repeat center;
-      background-size: contain;
-      width: 150px;
-      height: 150px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
+    /* ===== Message & image ===== */
+    #messageBox{
+      display:none;
+      flex-direction:column;
+      align-items:center;
+      margin-top:30px;
+      animation:fadeIn .6s both;
+    }
+    #messageBox img{
+      width:280px;
+      max-width:90vw;
+      border-radius:15px;
+      box-shadow:0 8px 20px rgba(0,0,0,.25);
+      margin-bottom:15px;
+    }
+    .yay{
+      font-size:1.8rem;
+      color:#b31246;
+      animation:pop .5s;
     }
 
-    .gift:hover {
-      transform: scale(1.05);
+    #tryAgain{
+      display:none;
+      margin-top:25px;
+      font-size:1.2rem;
+      color:#555;
+      animation:pop .5s;
     }
 
-    .message-box {
-      margin-top: 30px;
-      display: none;
-      flex-direction: column;
-      align-items: center;
+    @keyframes pop{
+      0%{transform:scale(.8);opacity:0;}
+      100%{transform:scale(1);opacity:1;}
     }
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
-    .message-box img {
-      width: 250px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    }
-
-    .yay {
-      font-size: 1.8rem;
-      color: #d6336c;
-      animation: pop 0.5s ease;
-    }
-
-    .try-again {
-      font-size: 1.2rem;
-      margin-top: 20px;
-      color: #555;
-    }
-
-    @keyframes pop {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    /* Responsive */
+    @media(max-width:600px){
+      .gift{width:110px;height:110px;}
     }
   </style>
 </head>
@@ -77,55 +106,61 @@
 
   <h1>Can you find your final gift, Mom?</h1>
 
-  <div class="grid">
-    <!-- Boxes 1 to 9 -->
-    <div class="gift" onclick="checkBox(1)"></div>
-    <div class="gift" onclick="checkBox(2)"></div>
-    <div class="gift" onclick="checkBox(3)"></div>
-    <div class="gift" onclick="checkBox(4)"></div>
-    <div class="gift" onclick="checkBox(5)"></div>
-    <div class="gift" onclick="checkBox(6)"></div>
-    <div class="gift" onclick="checkBox(7)"></div> <!-- This is the winner -->
-    <div class="gift" onclick="checkBox(8)"></div>
-    <div class="gift" onclick="checkBox(9)"></div>
+  <!-- 3×3 gift grid -->
+  <div class="grid" id="giftGrid">
+    <!-- gifts 1‑9 -->
+    <div class="gift" data-box="1"></div>
+    <div class="gift" data-box="2"></div>
+    <div class="gift" data-box="3"></div>
+    <div class="gift" data-box="4"></div>
+    <div class="gift" data-box="5"></div>
+    <div class="gift" data-box="6"></div>
+    <div class="gift" data-box="7"></div><!-- bottom‑left winner -->
+    <div class="gift" data-box="8"></div>
+    <div class="gift" data-box="9"></div>
   </div>
 
-  <div class="message-box" id="messageBox">
-    <img src="meandmom.jpg" alt="You and Mom">
+  <!-- Win message -->
+  <div id="messageBox">
+    <img src="meandmom.jpg" alt="Me and Mom">
     <div class="yay">YAY!!!! you won</div>
   </div>
 
-  <div class="try-again" id="tryAgain" style="display: none;">
-    Not this one! Try again 💖
-  </div>
+  <!-- Try‑again text -->
+  <div id="tryAgain">Not this one! Try again 💖</div>
 
   <script>
-    const winnerBox = 7;
-    let alreadyWon = false;
+    const winner = 7;      // bottom‑left box
+    let found = false;
 
-    function checkBox(number) {
-      const message = document.getElementById('messageBox');
-      const tryAgain = document.getElementById('tryAgain');
+    document.getElementById("giftGrid").addEventListener("click", e=>{
+      const box = e.target.closest(".gift");
+      if(!box || found) return;
 
-      if (number === winnerBox && !alreadyWon) {
-        message.style.display = 'flex';
-        tryAgain.style.display = 'none';
-        alreadyWon = true;
+      const num = Number(box.dataset.box);
+      const msg  = document.getElementById("messageBox");
+      const ta   = document.getElementById("tryAgain");
 
-        // 🎊 Confetti time
+      if(num === winner){
+        found = true;
+        msg.style.display = "flex";
+        ta.style.display  = "none";
+
+        // confetti burst
         confetti({
-          particleCount: 150,
-          spread: 80,
-          origin: { y: 0.6 }
+          particleCount:180,
+          spread:75,
+          origin:{y:0.6}
         });
-      } else if (!alreadyWon) {
-        message.style.display = 'none';
-        tryAgain.style.display = 'block';
-        tryAgain.style.animation = 'none';
-        tryAgain.offsetHeight; // reset animation
-        tryAgain.style.animation = 'pop 0.5s ease';
+      }else{
+        msg.style.display = "none";
+        ta.style.display  = "block";
+        // restart the pop animation
+        ta.style.animation="none";
+        ta.offsetHeight;              // force reflow
+        ta.style.animation="pop .5s";
       }
-    }
+    });
   </script>
 
 </body>

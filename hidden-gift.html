@@ -50,10 +50,6 @@
       transition: transform 0.3s ease;
     }
 
-    .gift-box:hover {
-      transform: scale(1.05);
-    }
-
     .gift-box::before, .gift-box::after {
       content: "";
       position: absolute;
@@ -77,7 +73,18 @@
       transform: translateY(-50%);
     }
 
-    /* Lid for winner box */
+    .gift-box.shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      50% { transform: translateX(10px); }
+      75% { transform: translateX(-6px); }
+      100% { transform: translateX(0); }
+    }
+
     .lid {
       position: absolute;
       top: 0;
@@ -146,8 +153,7 @@
   <h1>Can you find your final gift, Mom?</h1>
 
   <div class="grid" id="giftGrid">
-    <!-- 9 boxes -->
-    <!-- Boxes 1–9 -->
+    <!-- Boxes 1–6 -->
     <div class="gift-wrapper"><div class="gift-box" data-box="1"></div></div>
     <div class="gift-wrapper"><div class="gift-box" data-box="2"></div></div>
     <div class="gift-wrapper"><div class="gift-box" data-box="3"></div></div>
@@ -155,13 +161,14 @@
     <div class="gift-wrapper"><div class="gift-box" data-box="5"></div></div>
     <div class="gift-wrapper"><div class="gift-box" data-box="6"></div></div>
 
-    <!-- ✅ Correct box with lid & image -->
+    <!-- ✅ Correct box (box 7) -->
     <div class="gift-wrapper" id="winnerBox">
       <div class="lid" id="lid"></div>
       <img src="meandmom.jpg" alt="Me and Mom" class="surprise-image" id="surpriseImage">
       <div class="gift-box" data-box="7"></div>
     </div>
 
+    <!-- Boxes 8–9 -->
     <div class="gift-wrapper"><div class="gift-box" data-box="8"></div></div>
     <div class="gift-wrapper"><div class="gift-box" data-box="9"></div></div>
   </div>
@@ -182,19 +189,21 @@
       if (num === winner) {
         found = true;
 
-        // Lid animation
         document.getElementById("lid").classList.add("open");
         document.getElementById("surpriseImage").classList.add("show");
         document.getElementById("yayMessage").style.display = "block";
         document.getElementById("tryAgain").style.display = "none";
 
-        // Confetti burst
         confetti({
           particleCount: 180,
           spread: 80,
           origin: { y: 0.7 }
         });
       } else {
+        // Shake the clicked box
+        box.classList.add("shake");
+        setTimeout(() => box.classList.remove("shake"), 400);
+
         document.getElementById("tryAgain").style.display = "block";
         document.getElementById("yayMessage").style.display = "none";
       }
